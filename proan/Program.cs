@@ -5,7 +5,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hola Mundo");
+        Console.WriteLine("Hola Mundo devops");
 
         // 🚨 Código vulnerable a SQL Injection 🚨
         Console.WriteLine("Ingrese su nombre de usuario:");
