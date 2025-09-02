@@ -1,0 +1,48 @@
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Requerido para análisis completo
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x' # Ajusta a tu versión de .NET
+
+      - name: Install SonarCloud Scanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Debug token length
+        run: |
+            Write-Output "Token length: $($env:SONAR_TOKEN.Length)"
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build and analyze with SonarCloud
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_PROJECT_KEY: ${{ secrets.PROYK }}
+            SONAR_ORG: ${{ secrets.ORG }}
+        run: |
+            dotnet sonarscanner begin /k:"$env:SONAR_PROJECT_KEY" /o:"$env:SONAR_ORG" /d:sonar.login=$env:SONAR_TOKEN
+            dotnet restore
+            dotnet build --no-incremental
+            dotnet sonarscanner end /d:sonar.login=$env:SONAR_TOKEN
+
+
+
+
